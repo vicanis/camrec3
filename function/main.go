@@ -5,24 +5,11 @@ import (
 	"lambda/lambdaclient"
 	"lambda/parser"
 	"log"
-	"os"
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	runtime "github.com/aws/aws-lambda-go/lambda"
 )
-
-func init() {
-	bucketId := os.Getenv("BUCKET")
-	if bucketId == "" {
-		log.Fatal("no BUCKET environment variable")
-	}
-
-	filePrefix := os.Getenv("OBJECTPREFIX")
-	if filePrefix == "" {
-		log.Fatal("no OBJECTPREFIX environment variable")
-	}
-}
 
 func main() {
 	runtime.Start(handleRequest)
@@ -54,6 +41,21 @@ func processEvents(event events.SimpleEmailEvent) error {
 		}
 
 		log.Printf("> timestamp parsed: %s", ts.Format(time.RFC1123))
+
+		evt := lambdaclient.Event{
+			Id:        id,
+			Timestamp: *ts,
+			Raw:       body,
+		}
+
+		log.Printf("> save event data")
+
+		err = lambdaclient.SaveEvent(evt)
+		if err != nil {
+			return err
+		}
+
+		log.Printf("> ok")
 	}
 
 	return nil
