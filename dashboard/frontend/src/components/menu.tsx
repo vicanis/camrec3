@@ -29,7 +29,14 @@ function MenuItem({ name, path }: MenuItemType) {
     const { pathname } = useLocation();
 
     return (
-        <li>{pathname === path ? <b>{name}</b> : <a href={path}>{name}</a>}</li>
+        <li>
+            {pathname === path ||
+            (path !== "/" && pathname.startsWith(path)) ? (
+                <b>{name}</b>
+            ) : (
+                <a href={path}>{name}</a>
+            )}
+        </li>
     );
 }
 
