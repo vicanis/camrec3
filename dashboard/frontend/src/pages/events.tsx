@@ -26,7 +26,7 @@ function PageEvents({ count, items }: EventList) {
     return (
         <div className="my-3">
             <div className="flex gap-3">
-                <div>
+                <div className="mb-3">
                     Всего событий: <b>{count}</b>
                 </div>
 
@@ -62,11 +62,10 @@ function PageEvents({ count, items }: EventList) {
 
 function PageEvent({ id, timestamp, processed }: Event) {
     return (
-        <div key={id} className="grid grid-cols-3 my-2">
-            <div>{id}</div>
+        <div key={id} className="grid grid-cols-2 my-2">
             <div>
                 {dayjs(timestamp).format("DD.MM.YYYY HH:mm:ss Z")} (
-                {dayjs(timestamp).fromNow()}){dayjs(timestamp).unix()}
+                {dayjs(timestamp).fromNow()})
             </div>
             <div>{processed ? "Обработано" : "Не обработано"}</div>
         </div>
