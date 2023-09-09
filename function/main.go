@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+	lambdaclient.Initialize()
 	runtime.Start(handleRequest)
 }
 
