@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -14,16 +15,18 @@ import (
 var sess *session.Session
 var dynamoClient *dynamodb.DynamoDB
 
+type ItemList struct {
+	Count int   `json:"count"`
+	Items Items `json:"items"`
+}
+
+type Items []Item
+
 type Item struct {
 	Id        string    `json:"id"`
 	Timestamp time.Time `json:"timestamp"`
 	Processed bool      `json:"processed"`
 	Raw       string    `json:"raw"`
-}
-
-type ItemList struct {
-	Count int    `json:"count"`
-	Items []Item `json:"items"`
 }
 
 func Initialize() (err error) {
@@ -66,5 +69,19 @@ func GetItems() (items ItemList, err error) {
 		items.Items = append(items.Items, item)
 	}
 
+	sort.Sort(items.Items)
+
 	return
+}
+
+func (t Items) Len() int {
+	return len(t)
+}
+
+func (t Items) Less(a, b int) bool {
+	return t[a].Timestamp.After(t[b].Timestamp)
+}
+
+func (t Items) Swap(a, b int) {
+	t[a], t[b] = t[b], t[a]
 }
