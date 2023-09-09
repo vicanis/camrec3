@@ -12,7 +12,7 @@ func Start() error {
 
 	api.Configure(mx.PathPrefix("/api").Subrouter())
 
-	mx.NotFoundHandler = http.FileServer(http.Dir("public"))
+	mx.NotFoundHandler = http.FileServer(http.Dir("../frontend/build"))
 
 	srv := &http.Server{
 		Addr:    ":8080",
