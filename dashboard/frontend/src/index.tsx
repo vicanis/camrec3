@@ -17,7 +17,7 @@ const router = createBrowserRouter([
                 element: <PageDashboard />,
             },
             {
-                path: "events",
+                path: "events/:day?",
                 element: <DeferredPageEvents />,
                 loader: LoadEvents,
             },

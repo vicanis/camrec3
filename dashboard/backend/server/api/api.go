@@ -3,7 +3,9 @@ package api
 import (
 	"dashboard/database"
 	"encoding/json"
+	"errors"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -18,7 +20,17 @@ func Configure(mx *mux.Router) {
 
 	mx.Path("/events").Methods(http.MethodGet).Handler(JsonResponse(
 		func(r *http.Request) (any, error) {
-			return database.GetItems()
+			arg := r.URL.Query().Get("day")
+			if arg == "" {
+				return nil, errors.New("no day request argument")
+			}
+
+			day, err := time.Parse("20060102", arg)
+			if err != nil {
+				return nil, err
+			}
+
+			return database.GetItems(day)
 		},
 	))
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 )
 
 var sess *session.Session
@@ -43,9 +44,23 @@ func Initialize() (err error) {
 	return
 }
 
-func GetItems() (items ItemList, err error) {
+func GetItems(day time.Time) (items ItemList, err error) {
+	filt := expression.Name("unix").Between(
+		expression.Value(day.Unix()),
+		expression.Value(day.Add(24*time.Hour).Unix()),
+	)
+	expr, err := expression.NewBuilder().WithFilter(filt).Build()
+	if err != nil {
+		err = fmt.Errorf("expression build failed: %s", err)
+		return
+	}
+
 	scan, err := dynamoClient.Scan(&dynamodb.ScanInput{
-		TableName: aws.String(os.Getenv("DYNAMOTABLE")),
+		TableName:                 aws.String(os.Getenv("DYNAMOTABLE")),
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		FilterExpression:          expr.Filter(),
+		ProjectionExpression:      expr.Projection(),
 	})
 	if err != nil {
 		err = fmt.Errorf("database scan failed: %w", err)
