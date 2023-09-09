@@ -13,6 +13,7 @@ type Event struct {
 	Id        string    `json:"id"`
 	Raw       string    `json:"raw"`
 	Timestamp time.Time `json:"timestamp"`
+	UnixTime  int64     `json:"unix"`
 	Processed bool      `json:"processed"`
 }
 

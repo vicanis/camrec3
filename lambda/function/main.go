@@ -49,6 +49,7 @@ func processEvents(event events.SimpleEmailEvent) error {
 		evt := lambdaclient.Event{
 			Id:        id,
 			Timestamp: *ts,
+			UnixTime:  ts.Unix(),
 			Raw:       body,
 		}
 
