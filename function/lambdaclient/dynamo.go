@@ -1,7 +1,6 @@
 package lambdaclient
 
 import (
-	"log"
 	"os"
 	"time"
 
@@ -10,21 +9,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
-var dynamoClient *dynamodb.DynamoDB
-
 type Event struct {
 	Id        string    `json:"id"`
 	Raw       string    `json:"raw"`
 	Timestamp time.Time `json:"timestamp"`
 	Processed bool      `json:"processed"`
-}
-
-func init() {
-	if os.Getenv("DYNAMOTABLE") == "" {
-		log.Fatal("no DYNAMOTABLE environment variable")
-	}
-
-	dynamoClient = dynamodb.New(LambdaSession)
 }
 
 func SaveEvent(evt Event) (err error) {

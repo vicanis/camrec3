@@ -12,20 +12,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-var s3Client *s3.S3
-
-func init() {
-	if os.Getenv("BUCKET") == "" {
-		log.Fatal("no BUCKET environment variable")
-	}
-
-	if os.Getenv("OBJECTPREFIX") == "" {
-		log.Fatal("no OBJECTPREFIX environment variable")
-	}
-
-	s3Client = s3.New(LambdaSession)
-}
-
 func GetMailData(id string) (data string, err error) {
 	obj, err := s3Client.GetObject(&s3.GetObjectInput{
 		Bucket: aws.String(os.Getenv("BUCKET")),
