@@ -1,6 +1,7 @@
 package lambdaclient
 
 import (
+	"errors"
 	"log"
 	"os"
 
@@ -16,23 +17,26 @@ var LambdaSession *session.Session
 var dynamoClient *dynamodb.DynamoDB
 var s3Client *s3.S3
 
-func Initialize() {
+func Initialize() (err error) {
 	if os.Getenv("DYNAMOTABLE") == "" {
-		log.Fatal("no DYNAMOTABLE environment variable")
+		err = errors.New("no DYNAMOTABLE environment variable")
+		return
 	}
 
 	if os.Getenv("BUCKET") == "" {
-		log.Fatal("no BUCKET environment variable")
+		err = errors.New("no BUCKET environment variable")
+		return
 	}
 
 	if os.Getenv("OBJECTPREFIX") == "" {
-		log.Fatal("no OBJECTPREFIX environment variable")
+		err = errors.New("no OBJECTPREFIX environment variable")
+		return
 	}
 
 	log.Printf("create session")
 	sess, err := session.NewSession()
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
 	LambdaSession = sess
@@ -45,4 +49,6 @@ func Initialize() {
 
 	log.Printf("create S3 client")
 	s3Client = s3.New(LambdaSession)
+
+	return
 }

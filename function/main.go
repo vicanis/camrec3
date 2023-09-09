@@ -12,7 +12,10 @@ import (
 )
 
 func main() {
-	lambdaclient.Initialize()
+	if err := lambdaclient.Initialize(); err != nil {
+		log.Fatal(err)
+	}
+
 	runtime.Start(handleRequest)
 }
 
