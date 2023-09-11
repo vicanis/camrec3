@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"processor/bundler"
@@ -18,38 +17,7 @@ func Start() error {
 		vars := mux.Vars(r)
 		timestamp := vars["timestamp"]
 
-		tpl := template.Must(template.New("index").Parse(`
-			<!DOCTYPE html>
-			<html>
-				<head>
-					<title>Event video</title>
-					<style>
-						body {
-							margin: 0;
-							overflow: hidden;
-						}
-						video {
-							width: 100vw;
-							height: 100vh;
-							padding: 1em;
-							box-sizing: border-box;
-						}
-					</style>
-					<script>
-						window.addEventListener('load', () => {
-							const video = document.getElementById("video");
-							video.addEventListener('click', () => video.play());
-						});
-					</script>
-				</head>
-				<body>
-					<video id="video" src="/event/{{.}}" />
-				</body>
-			</html>
-		`))
-
-		err := tpl.Execute(w, timestamp)
-		if err != nil {
+		if err := renderPlayer(fmt.Sprintf("/event/%s", timestamp), w); err != nil {
 			log.Printf("template render failed: %s", err)
 		}
 	})
