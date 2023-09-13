@@ -54,7 +54,7 @@ func Start() error {
 	})
 
 	srv := &http.Server{
-		Addr:    ":8088",
+		Addr:    ":80",
 		Handler: mx,
 	}
 

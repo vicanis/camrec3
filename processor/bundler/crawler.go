@@ -14,10 +14,12 @@ type chunkFile struct {
 
 type chunkFiles []chunkFile
 
+const dirRaw = "/video/raw"
+
 func getChunkFiles() (files chunkFiles, err error) {
 	files = make(chunkFiles, 0)
 
-	dirFiles, err := os.ReadDir("../video/raw")
+	dirFiles, err := os.ReadDir(dirRaw)
 	if err != nil {
 		return
 	}
@@ -59,5 +61,5 @@ func (f chunkFiles) Swap(a, b int) {
 }
 
 func (f chunkFile) Read() (data []byte, err error) {
-	return os.ReadFile("../video/raw/" + f.name)
+	return os.ReadFile(dirRaw + "/" + f.name)
 }

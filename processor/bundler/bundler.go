@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const dirChunks = "/video/chunks"
+
 func SearchVideoBundle(ts time.Time) (data []byte, err error) {
 	chunkStart := ts.Add(-3 * time.Second)
 
@@ -24,7 +26,7 @@ func SearchVideoBundle(ts time.Time) (data []byte, err error) {
 	}
 
 	y, m, d := ts.Date()
-	dir := fmt.Sprintf("../video/chunks/%04d/%02d/%02d", y, m, d)
+	dir := fmt.Sprintf(dirChunks+"/%04d/%02d/%02d", y, m, d)
 
 	err = os.MkdirAll(dir, 0755)
 	if err != nil {
