@@ -13,5 +13,7 @@ services:
         restart: always
         volumes:
             - ./video:/video
+        ports:
+            - 9000:80
         environment:
             TZ: Europe/Samara
