@@ -1,0 +1,10 @@
+version: "3.3"
+
+services:
+    recorder:
+        build: recorder
+        restart: always
+        volumes:
+            - ./video:/video
+        environment:
+            TZ: Europe/Samara
