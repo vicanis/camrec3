@@ -8,3 +8,10 @@ services:
             - ./video:/video
         environment:
             TZ: Europe/Samara
+    processor:
+        build: processor
+        restart: always
+        volumes:
+            - ./video:/video
+        environment:
+            TZ: Europe/Samara
