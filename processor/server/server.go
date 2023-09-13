@@ -13,7 +13,9 @@ import (
 func Start() error {
 	mx := mux.NewRouter()
 
-	mx.Path("/play/{timestamp}").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	apiRouter := mx.PathPrefix("/api").Subrouter()
+
+	apiRouter.Path("/play/{timestamp}").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		timestamp := vars["timestamp"]
 
@@ -22,7 +24,7 @@ func Start() error {
 		}
 	})
 
-	mx.Path("/event/{timestamp}").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	apiRouter.Path("/event/{timestamp}").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		timestamp := vars["timestamp"]
 
