@@ -2,7 +2,8 @@ go 1.21.0
 
 use (
 	./dashboard/backend
-	./lambda/function
+	./lambda/eventprocessor
+	./lambda/mailhandler
 	./processor
 	./recorder
 )

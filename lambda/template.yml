@@ -2,15 +2,27 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 Description: An AWS Lambda application that calls the Lambda API.
 Resources:
-    function:
+    mailhandler:
         Type: AWS::Serverless::Function
         Properties:
             Handler: main
             Runtime: go1.x
-            CodeUri: function/.
-            Description: Call the AWS Lambda API
+            CodeUri: mailhandler/.
+            Description: Handle hicloud email
             Timeout: 5
-            # Function's execution role
+            Policies:
+                - AWSLambdaBasicExecutionRole
+                - AWSLambda_ReadOnlyAccess
+                - AWSXrayWriteOnlyAccess
+            Tracing: Active
+    eventprocessor:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: main
+            Runtime: go1.x
+            CodeUri: eventprocessor/.
+            Description: Handle event list
+            Timeout: 5
             Policies:
                 - AWSLambdaBasicExecutionRole
                 - AWSLambda_ReadOnlyAccess
