@@ -20,7 +20,12 @@ type Event struct {
 }
 
 func GetUnprocessedEvents(limit int) (items []Event, err error) {
-	filt := expression.Name("processed").Equal(expression.Value(false))
+	filt := expression.And(
+		expression.Name("processed").Equal(expression.Value(false)),
+		expression.Name("unix").LessThan(
+			expression.Value(time.Now().Add(-time.Minute).Unix()),
+		),
+	)
 
 	expr, err := expression.NewBuilder().WithFilter(filt).Build()
 	if err != nil {
