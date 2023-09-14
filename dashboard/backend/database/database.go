@@ -51,7 +51,7 @@ func GetItems(day time.Time) (items ItemList, err error) {
 	)
 	expr, err := expression.NewBuilder().WithFilter(filt).Build()
 	if err != nil {
-		err = fmt.Errorf("expression build failed: %s", err)
+		err = fmt.Errorf("expression build failed: %w", err)
 		return
 	}
 
@@ -77,7 +77,7 @@ func GetItems(day time.Time) (items ItemList, err error) {
 
 		err = dynamodbattribute.UnmarshalMap(rawItem, &item)
 		if err != nil {
-			err = fmt.Errorf("database document unmarshal error: %s", err)
+			err = fmt.Errorf("database document unmarshal error: %w", err)
 			return
 		}
 
