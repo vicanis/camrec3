@@ -43,8 +43,8 @@ func Start() error {
 
 		data, err := bundler.SearchVideoBundle(ts)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "error searching files")
+			w.WriteHeader(http.StatusNotFound)
+			return
 		}
 
 		w.Header().Add("Content-Type", "video/mp4")
