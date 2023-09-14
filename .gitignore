@@ -1,5 +1,5 @@
 bucket-name.txt
 out.yml
-function/main
+lambda/*/main
 **/.env*
 video
