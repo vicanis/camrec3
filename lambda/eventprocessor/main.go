@@ -21,7 +21,7 @@ func main() {
 func handleRequest(ctx context.Context, event events.SimpleEmailEvent) (string, error) {
 	log.Printf("start")
 
-	items, err := lambdaclient.GetUnprocessedEvents(10)
+	items, err := lambdaclient.GetUnprocessedEvents(50)
 	if err != nil {
 		return "ERROR", err
 	}
