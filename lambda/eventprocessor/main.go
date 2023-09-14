@@ -30,11 +30,11 @@ func handleRequest(ctx context.Context, event events.SimpleEmailEvent) (string, 
 		return "ERROR", errors.New("not found")
 	}
 
-	item := items[0]
-
-	err = item.SetProcessed()
-	if err != nil {
-		return "ERROR", err
+	for _, item := range items {
+		err := lambdaclient.ProcessEvent(item)
+		if err != nil {
+			return "ERROR", err
+		}
 	}
 
 	return "OK", nil

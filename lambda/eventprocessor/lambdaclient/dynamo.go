@@ -19,7 +19,7 @@ type Event struct {
 	Processed bool      `json:"processed"`
 }
 
-func GetUnprocessedEvents(limit int64) (items []Event, err error) {
+func GetUnprocessedEvents(limit int) (items []Event, err error) {
 	filt := expression.Name("processed").Equal(expression.Value(false))
 
 	expr, err := expression.NewBuilder().WithFilter(filt).Build()
@@ -28,14 +28,14 @@ func GetUnprocessedEvents(limit int64) (items []Event, err error) {
 		return
 	}
 
-	scan, err := dynamoClient.Scan(&dynamodb.ScanInput{
+	input := &dynamodb.ScanInput{
 		TableName:                 aws.String(os.Getenv("DYNAMOTABLE")),
 		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
 		FilterExpression:          expr.Filter(),
-		ProjectionExpression:      expr.Projection(),
-		Limit:                     aws.Int64(limit),
-	})
+	}
+
+	scan, err := dynamoClient.Scan(input)
 	if err != nil {
 		err = fmt.Errorf("database scan failed: %w", err)
 		return
@@ -53,29 +53,42 @@ func GetUnprocessedEvents(limit int64) (items []Event, err error) {
 		}
 
 		items = append(items, item)
+
+		if len(items) == limit {
+			break
+		}
 	}
 
 	return
 }
 
-func (e Event) SetProcessed() (err error) {
-	keyCond := expression.Key("id").Equal(expression.Value(e.Id))
-
-	upd := expression.UpdateBuilder{}
-	upd.Set(expression.Name("processed"), expression.Value(true))
-
-	expr, err := expression.NewBuilder().WithKeyCondition(keyCond).WithUpdate(upd).Build()
-	if err != nil {
-		err = fmt.Errorf("expression build failed: %w", err)
-		return
+func (e Event) SetProcessed(fileName string) (err error) {
+	input := &dynamodb.UpdateItemInput{
+		TableName: aws.String(os.Getenv("DYNAMOTABLE")),
+		ExpressionAttributeNames: map[string]*string{
+			"#processed": aws.String("processed"),
+			"#file":      aws.String("file"),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":yes": {
+				BOOL: aws.Bool(true),
+			},
+			":path": {
+				S: aws.String(fileName),
+			},
+		},
+		Key: map[string]*dynamodb.AttributeValue{
+			"id": {
+				S: aws.String(e.Id),
+			},
+			"timestamp": {
+				S: aws.String(e.Timestamp.Format(time.RFC3339)),
+			},
+		},
+		UpdateExpression: aws.String("SET #processed = :yes, #file = :path"),
 	}
 
-	_, err = dynamoClient.UpdateItem(&dynamodb.UpdateItemInput{
-		TableName:                 aws.String(os.Getenv("DYNAMOTABLE")),
-		ExpressionAttributeNames:  expr.Names(),
-		ExpressionAttributeValues: expr.Values(),
-		UpdateExpression:          expr.Update(),
-	})
+	_, err = dynamoClient.UpdateItem(input)
 	if err != nil {
 		err = fmt.Errorf("update item failed: %w", err)
 		return
