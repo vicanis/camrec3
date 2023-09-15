@@ -23,7 +23,7 @@ func GetUnprocessedEvents(limit int) (items []Event, err error) {
 	filt := expression.And(
 		expression.Name("processed").Equal(expression.Value(false)),
 		expression.Name("unix").LessThan(
-			expression.Value(time.Now().Add(-90*time.Second).Unix()),
+			expression.Value(time.Now().Add(-2*time.Minute).Unix()),
 		),
 	)
 
