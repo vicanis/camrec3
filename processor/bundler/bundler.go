@@ -2,13 +2,9 @@ package bundler
 
 import (
 	"errors"
-	"fmt"
-	"os"
 	"processor/encoder"
 	"time"
 )
-
-const dirChunks = "/video/chunks"
 
 func SearchVideoBundle(ts time.Time) (data []byte, err error) {
 	chunkStart := ts.Add(-3 * time.Second)
@@ -20,24 +16,7 @@ func SearchVideoBundle(ts time.Time) (data []byte, err error) {
 
 	_, _, s := chunkStart.Clock()
 
-	data, err = encoder.Encode(data, s)
-	if err != nil {
-		return
-	}
-
-	y, m, d := ts.Date()
-	dir := fmt.Sprintf(dirChunks+"/%04d/%02d/%02d", y, m, d)
-
-	err = os.MkdirAll(dir, 0755)
-	if err != nil {
-		return
-	}
-
-	file := ts.Format("2006-01-02-15-04-05") + ".mp4"
-
-	err = os.WriteFile(fmt.Sprintf(dir+"/"+file), data, 0644)
-
-	return
+	return encoder.Encode(data, s)
 }
 
 func fetchChunkData(ts time.Time) (data []byte, err error) {
