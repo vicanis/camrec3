@@ -1,0 +1,157 @@
+openapi: 3.0.3
+info:
+  title: Camera backend
+  description: |-
+    Camera event processor. [Project repository](https://github.com/vicanis/camrec3)
+  version: 1.0.0
+tags:
+  - name: camera
+    description: Everything about camera
+  - name: event
+    description: Everything about motion events
+paths:
+  /play/{timestamp}:
+    get:
+      tags:
+        - camera
+      summary: Render player page
+      parameters:
+        - name: timestamp
+          description: Get video from this point of time. Date format `YYYYMMDDhhmmss`
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/Timestamp"
+      responses:
+        200:
+          description: Successful operation
+          content:
+            text/html:
+              schema:
+                type: string
+  /event/{timestamp}:
+    get:
+      tags:
+        - camera
+      summary: Get event video file
+      parameters:
+        - name: start
+          in: path
+          required: true
+          description: Get video from this point of time. Date format `YYYYMMDDhhmmss`
+          schema:
+            $ref: "#/components/schemas/Timestamp"
+        - name: duration
+          in: query
+          description: Video duration in seconds
+          schema:
+            type: string
+            example: 30
+            default: 30
+      responses:
+        200:
+          description: Successful operation
+          content:
+            video/mp4:
+              schema:
+                $ref: "#/components/schemas/Binary"
+        400:
+          description: No timestamp, timestamp parse failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Video not found. No response body
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /frame:
+    get:
+      tags:
+        - camera
+      summary: "TODO: Take a picture"
+      responses:
+        200:
+          description: Successful operation
+          content:
+            image/jpeg:
+              schema:
+                $ref: "#/components/schemas/Binary"
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /event/list:
+    get:
+      tags:
+        - event
+      summary: "TODO: Get event list"
+      parameters:
+        - name: offset
+          in: query
+          description: Start offset of the list
+          schema:
+            type: integer
+            example: 0
+            default: 0
+        - name: limit
+          in: query
+          description: Event list limit
+          schema:
+            type: integer
+            example: 10
+            default: 10
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+        404:
+          description: Events were not found
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "error occurred"
+    Binary:
+      type: string
+      format: binary
+      example: "<binary>"
+    Timestamp:
+      type: string
+      pattern: '^\d{14}$'
+      example: 20060102150405
+      description: Format `YYYYMMDDhhmmss`
+    Event:
+      type: object
+      properties:
+        start:
+          type: integer
+          pattern: '^\d{14}$'
+          example: 20060102150405
+          description: Timestamp of the event. Format ```YYYYMMDDhhmmss```
+        processed:
+          type: boolean
+          description: Whether event was processed or not
+        saved:
+          type: boolean
+          description: Whether event was saved or not
