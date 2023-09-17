@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"processor/bundler"
+	"processor/encoder"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -45,6 +47,37 @@ func Configure(mx *mux.Router) {
 		w.WriteHeader(http.StatusOK)
 
 		w.Write(data)
+	})
+
+	mx.Path("/frame/{timestamp}").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ts, err := parseTimestamp(r)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, err)
+			return
+		}
+
+		log.Printf("search video bundle with timestamp: %s", ts.Format(time.RFC1123))
+
+		bundle, err := bundler.SearchVideoBundle(ts)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		frame, err := encoder.ExtractFrame(bundle, int(math.Min(56, float64(ts.Second()))))
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "video encoding failed: %s", err)
+			return
+		}
+
+		w.Header().Add("Content-Type", "image/jpeg")
+		w.Header().Add("Content-Length", fmt.Sprint(len(frame)))
+
+		w.WriteHeader(http.StatusOK)
+
+		w.Write(frame)
 	})
 }
 
