@@ -70,36 +70,58 @@ func startStreaming(ctx context.Context) (err error) {
 
 	var minuteTicker *time.Ticker
 
-	saveChunk := func() {
+	saveChunk := func() (err error) {
 		chunkLock.Lock()
 
-		if err := os.WriteFile(
+		y, m, d := time.Now().Date()
+
+		dir := fmt.Sprintf(
+			"/video/raw/%04d/%02d/%02d",
+			y, m, d,
+		)
+
+		err = os.MkdirAll(dir, 0755)
+		if err != nil {
+			return
+		}
+
+		err = os.WriteFile(
 			fmt.Sprintf(
-				"/video/raw/%s",
+				"%s/%s",
+				dir,
 				time.Now().Format("2006-01-02-15-04-05"),
 			),
 			chunk,
 			0644,
-		); err != nil {
-			log.Fatal(err)
+		)
+		if err != nil {
+			return
 		}
 
 		chunk = make([]byte, 0)
 
 		chunkLock.Unlock()
+
+		return
 	}
 
 	go func() {
 		minuteTicker = getMinuteTicker()
 
-		saveChunk()
+		err := saveChunk()
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		for {
 			select {
 			case <-ctx.Done():
 				return
 			case <-minuteTicker.C:
-				saveChunk()
+				err = saveChunk()
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
 		}
 	}()
