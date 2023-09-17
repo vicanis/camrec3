@@ -15,7 +15,7 @@ func Configure(mx *mux.Router) {
 		vars := mux.Vars(r)
 		timestamp := vars["timestamp"]
 
-		if err := renderPlayer(fmt.Sprintf("/event/%s", timestamp), w); err != nil {
+		if err := renderPlayer(fmt.Sprintf("/api/event/%s", timestamp), w); err != nil {
 			log.Printf("template render failed: %s", err)
 		}
 	})
