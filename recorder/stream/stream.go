@@ -64,11 +64,10 @@ func startStreaming(ctx context.Context) (err error) {
 
 	var minuteTicker *time.Ticker
 
-	saveChunk := func() (err error) {
+	save := func() (err error) {
 		chunkLock.Lock()
 
 		err = saveChunk(chunk)
-
 		if err != nil {
 			log.Printf("save chunk failed: %s", err)
 		}
@@ -83,7 +82,7 @@ func startStreaming(ctx context.Context) (err error) {
 	go func() {
 		minuteTicker = getMinuteTicker()
 
-		err := saveChunk()
+		err := save()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -93,7 +92,7 @@ func startStreaming(ctx context.Context) (err error) {
 			case <-ctx.Done():
 				return
 			case <-minuteTicker.C:
-				err = saveChunk()
+				err = save()
 				if err != nil {
 					log.Fatal(err)
 				}
