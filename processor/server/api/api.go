@@ -66,8 +66,6 @@ func Configure(mx *mux.Router) {
 			return
 		}
 
-		log.Printf("search video bundle with timestamp: %s", ts.Format(time.RFC1123))
-
 		bundle, err := bundler.SearchVideoBundle(ts)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
