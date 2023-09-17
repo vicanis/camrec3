@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,28 +13,23 @@ import (
 
 func Configure(mx *mux.Router) {
 	mx.Path("/play/{timestamp}").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		timestamp := vars["timestamp"]
+		ts, err := parseTimestamp(r)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, err)
+			return
+		}
 
-		if err := renderPlayer(fmt.Sprintf("/api/event/%s", timestamp), w); err != nil {
+		if err := renderPlayer(fmt.Sprintf("/api/event/%s", ts.Format("20060102150405")), w); err != nil {
 			log.Printf("template render failed: %s", err)
 		}
 	})
 
 	mx.Path("/event/{timestamp}").Methods(http.MethodGet).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		timestamp := vars["timestamp"]
-
-		if timestamp == "" {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("no timestamp"))
-			return
-		}
-
-		ts, err := time.ParseInLocation("20060102150405", timestamp, time.Local)
+		ts, err := parseTimestamp(r)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(w, "invalid timestamp: %s", timestamp)
+			fmt.Fprint(w, err)
 			return
 		}
 
@@ -50,4 +46,22 @@ func Configure(mx *mux.Router) {
 
 		w.Write(data)
 	})
+}
+
+func parseTimestamp(r *http.Request) (ts time.Time, err error) {
+	vars := mux.Vars(r)
+	timestamp := vars["timestamp"]
+
+	if timestamp == "" {
+		err = errors.New("no timestamp")
+		return
+	}
+
+	ts, err = time.ParseInLocation("20060102150405", timestamp, time.Local)
+	if err != nil {
+		err = fmt.Errorf("timestamp parse failed: %w", err)
+		return
+	}
+
+	return
 }
