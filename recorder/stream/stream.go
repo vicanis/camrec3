@@ -25,11 +25,6 @@ func Start(ctx context.Context) chan error {
 }
 
 func startStreaming(ctx context.Context) (err error) {
-	if os.Getenv("STREAM") == "" {
-		err = errors.New("no stream URL")
-		return
-	}
-
 	cmdArgs := []string{
 		"ffmpeg",
 		"-i",
