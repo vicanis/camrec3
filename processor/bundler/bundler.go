@@ -2,24 +2,10 @@ package bundler
 
 import (
 	"errors"
-	"processor/encoder"
 	"time"
 )
 
 func SearchVideoBundle(ts time.Time) (data []byte, err error) {
-	chunkStart := ts.Add(-3 * time.Second)
-
-	data, err = fetchChunkData(chunkStart)
-	if err != nil {
-		return
-	}
-
-	_, _, s := chunkStart.Clock()
-
-	return encoder.Encode(data, s)
-}
-
-func fetchChunkData(ts time.Time) (data []byte, err error) {
 	chunkFiles, err := getChunkFiles()
 	if err != nil {
 		return

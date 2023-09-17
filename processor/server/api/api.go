@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math"
 	"net/http"
 	"processor/bundler"
 	"processor/encoder"
@@ -41,6 +40,16 @@ func Configure(mx *mux.Router) {
 			return
 		}
 
+		chunkStart := ts.Add(-3 * time.Second)
+		_, _, s := chunkStart.Clock()
+
+		data, err = encoder.Encode(data, s)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "encode failed: %s", err)
+			return
+		}
+
 		w.Header().Add("Content-Type", "video/mp4")
 		w.Header().Add("Content-Length", fmt.Sprint(len(data)))
 
@@ -65,7 +74,7 @@ func Configure(mx *mux.Router) {
 			return
 		}
 
-		frame, err := encoder.ExtractFrame(bundle, int(math.Min(56, float64(ts.Second()))))
+		frame, err := encoder.ExtractFrame(bundle, ts.Second())
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "video encoding failed: %s", err)
