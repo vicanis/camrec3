@@ -26,11 +26,6 @@ func ExtractFrame(source []byte, offset int) (frame []byte, err error) {
 
 	tempFiles = append(tempFiles, tmp.Name())
 
-	log.Printf(
-		"write source (%d bytes) to temporary file: %s",
-		len(source), tmp.Name(),
-	)
-
 	_, err = tmp.Write(source)
 	if err != nil {
 		return
@@ -54,8 +49,6 @@ func ExtractFrame(source []byte, offset int) (frame []byte, err error) {
 		tmp.Name() + ".jpg",
 	}
 
-	log.Printf("run command: %s", strings.Join(cmdArgs, " "))
-
 	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 
 	stdout := &strings.Builder{}
@@ -77,8 +70,6 @@ func ExtractFrame(source []byte, offset int) (frame []byte, err error) {
 		err = fmt.Errorf("exit code: %d", exitCode)
 		return
 	}
-
-	log.Printf("exit code ok, process output: %s", stdout.String())
 
 	return os.ReadFile(tmp.Name() + ".jpg")
 }
