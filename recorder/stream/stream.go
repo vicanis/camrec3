@@ -2,7 +2,6 @@ package stream
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -68,29 +67,10 @@ func startStreaming(ctx context.Context) (err error) {
 	saveChunk := func() (err error) {
 		chunkLock.Lock()
 
-		y, m, d := time.Now().Date()
+		err = saveChunk(chunk)
 
-		dir := fmt.Sprintf(
-			"/video/raw/%04d/%02d/%02d",
-			y, m, d,
-		)
-
-		err = os.MkdirAll(dir, 0755)
 		if err != nil {
-			return
-		}
-
-		err = os.WriteFile(
-			fmt.Sprintf(
-				"%s/%s",
-				dir,
-				time.Now().Format("2006-01-02-15-04-05"),
-			),
-			chunk,
-			0644,
-		)
-		if err != nil {
-			return
+			log.Printf("save chunk failed: %s", err)
 		}
 
 		chunk = make([]byte, 0)
