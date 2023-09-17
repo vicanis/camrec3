@@ -69,11 +69,17 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /frame:
+  /frame/{timestamp}:
     get:
       tags:
         - camera
-      summary: "TODO: Take a picture"
+      summary: "Take a picture from the given timestamp"
+      parameters:
+        - name: timestamp
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/Timestamp"
       responses:
         200:
           description: Successful operation
