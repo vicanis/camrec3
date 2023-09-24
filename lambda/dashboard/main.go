@@ -38,6 +38,13 @@ func wrapper(handler SimpleRequestHandler) AwsRequestHandler {
 			}, nil
 		}
 
+		if binary, ok := data.([]byte); ok {
+			return events.APIGatewayProxyResponse{
+				Body:       string(binary),
+				StatusCode: http.StatusOK,
+			}, nil
+		}
+
 		buf, err := json.Marshal(data)
 		if err != nil {
 			buf, _ = json.Marshal(ResponseError{
@@ -52,7 +59,7 @@ func wrapper(handler SimpleRequestHandler) AwsRequestHandler {
 
 		return events.APIGatewayProxyResponse{
 			Body:       string(buf),
-			StatusCode: 200,
+			StatusCode: http.StatusOK,
 		}, nil
 	}
 }
@@ -66,6 +73,10 @@ func handleRequest(event events.APIGatewayProxyRequest) (any, error) {
 	if event.HTTPMethod == http.MethodGet {
 		if action == "list" {
 			return handleEventList(event)
+		}
+
+		if action == "load" {
+			return handleEventData(event)
 		}
 	}
 
@@ -97,6 +108,18 @@ func handleEventList(event events.APIGatewayProxyRequest) (list *ResponseList, e
 	}
 
 	return
+}
+
+func handleEventData(event events.APIGatewayProxyRequest) (data []byte, err error) {
+	qsa := event.QueryStringParameters
+
+	file := qsa["file"]
+	if file == "" {
+		err = errors.New("no file")
+		return
+	}
+
+	return lambdaclient.LoadFile(file)
 }
 
 type ResponseError struct {
