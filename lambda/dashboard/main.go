@@ -71,6 +71,8 @@ func handleRequest(event events.APIGatewayProxyRequest) (any, error) {
 	}
 
 	if event.HTTPMethod == http.MethodGet {
+		log.Printf("process action %s", action)
+
 		if action == "list" {
 			return handleEventList(event)
 		}
@@ -118,6 +120,8 @@ func handleEventData(event events.APIGatewayProxyRequest) (data []byte, err erro
 		err = errors.New("no file")
 		return
 	}
+
+	log.Printf("load file %s", file)
 
 	return lambdaclient.LoadFile(file)
 }
