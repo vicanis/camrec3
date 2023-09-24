@@ -7,8 +7,6 @@ info:
 tags:
   - name: camera
     description: Everything about camera
-  - name: event
-    description: Everything about motion events
 paths:
   /play/{timestamp}:
     get:
@@ -93,43 +91,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /event/list:
-    get:
-      tags:
-        - event
-      summary: "TODO: Get event list"
-      parameters:
-        - name: offset
-          in: query
-          description: Start offset of the list
-          schema:
-            type: integer
-            example: 0
-            default: 0
-        - name: limit
-          in: query
-          description: Event list limit
-          schema:
-            type: integer
-            example: 10
-            default: 10
-      responses:
-        200:
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Event"
-        404:
-          description: Events were not found
-        500:
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -147,17 +108,3 @@ components:
       pattern: '^\d{14}$'
       example: 20060102150405
       description: Format `YYYYMMDDhhmmss`
-    Event:
-      type: object
-      properties:
-        start:
-          type: integer
-          pattern: '^\d{14}$'
-          example: 20060102150405
-          description: Timestamp of the event. Format ```YYYYMMDDhhmmss```
-        processed:
-          type: boolean
-          description: Whether event was processed or not
-        saved:
-          type: boolean
-          description: Whether event was saved or not
