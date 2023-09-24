@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"dashboard/lambdaclient"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"log"
@@ -35,13 +36,17 @@ func wrapper(handler SimpleRequestHandler) AwsRequestHandler {
 			return events.APIGatewayProxyResponse{
 				Body:       string(buf),
 				StatusCode: http.StatusInternalServerError,
-			}, nil
+			}, err
 		}
 
 		if binary, ok := data.([]byte); ok {
 			return events.APIGatewayProxyResponse{
-				Body:       string(binary),
-				StatusCode: http.StatusOK,
+				Body:            base64.StdEncoding.EncodeToString(binary),
+				IsBase64Encoded: true,
+				StatusCode:      http.StatusOK,
+				Headers: map[string]string{
+					"Content-Type": "video/mp4",
+				},
 			}, nil
 		}
 
@@ -54,7 +59,7 @@ func wrapper(handler SimpleRequestHandler) AwsRequestHandler {
 			return events.APIGatewayProxyResponse{
 				Body:       string(buf),
 				StatusCode: http.StatusBadRequest,
-			}, nil
+			}, err
 		}
 
 		return events.APIGatewayProxyResponse{
