@@ -28,3 +28,16 @@ Resources:
                 - AWSLambda_ReadOnlyAccess
                 - AWSXrayWriteOnlyAccess
             Tracing: Active
+    dashboard:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: main
+            Runtime: go1.x
+            CodeUri: dashboard/.
+            Description: Handle dashboard requests
+            Timeout: 5
+            Policies:
+                - AWSLambdaBasicExecutionRole
+                - AWSLambda_ReadOnlyAccess
+                - AWSXrayWriteOnlyAccess
+            Tracing: Active

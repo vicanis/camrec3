@@ -1,7 +1,7 @@
 go 1.21.0
 
 use (
-	./dashboard/backend
+	./lambda/dashboard
 	./lambda/eventprocessor
 	./lambda/mailhandler
 	./processor
