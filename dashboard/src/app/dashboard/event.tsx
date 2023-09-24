@@ -22,7 +22,10 @@ function Event(e: EventData) {
                 <div>{dayjs(e.timestamp).format("HH:mm:ss")}</div>
                 <div>{dayjs(e.timestamp).fromNow()}</div>
             </div>
-            <Video ts={dayjs(e.timestamp).format("YYYYMMDDHHmmss")} />
+            <Video
+                ts={dayjs(e.timestamp).format("YYYYMMDDHHmmss")}
+                file={e.file}
+            />
         </div>
     );
 }

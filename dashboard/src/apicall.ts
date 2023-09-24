@@ -1,4 +1,4 @@
-export default async function apicall<T = any>(
+export default async function apicall(
     method: "get" | "post",
     action: string,
     args?: any
@@ -26,8 +26,9 @@ export default async function apicall<T = any>(
         }
     }
 
-    const resp = await fetch(url, { ...req, headers });
-    const body = await resp.json();
+    if (method === "get" && action === "load") {
+        headers["Accept"] = "video/mp4";
+    }
 
-    return body as T;
+    return fetch(url, { ...req, headers });
 }

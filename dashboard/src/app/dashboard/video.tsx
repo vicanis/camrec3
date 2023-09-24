@@ -11,7 +11,7 @@ import {
     useState,
 } from "react";
 
-export default function Video({ ts }: { ts: string }) {
+export default function Video({ ts, file }: { ts: string; file: string }) {
     const ref = useRef<HTMLDivElement>(null);
 
     const isVisible = useVisible(ref);
@@ -63,7 +63,7 @@ export default function Video({ ts }: { ts: string }) {
                     onEnded={(event) =>
                         (event.target as HTMLVideoElement).play()
                     }
-                    src={"/api/event/" + ts}
+                    src={"/api/load?file=" + file}
                     onLoadedData={loadHandler}
                     onError={(event) => {
                         console.error("load failed", event);

@@ -70,10 +70,12 @@ export default async function Page({
     );
 }
 
-function getData(date: Dayjs) {
-    return apicall<EventResponse>("get", "list", {
+async function getData(date: Dayjs): Promise<EventResponse> {
+    const response = await apicall("get", "list", {
         date: date.startOf("day").format("YYYYMMDDHHmmss"),
     });
+
+    return response.json();
 }
 
 type EventResponse = {
