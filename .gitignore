@@ -3,3 +3,6 @@ out.yml
 lambda/*/main
 **/.env*
 video
+
+# Local Netlify folder
+.netlify
