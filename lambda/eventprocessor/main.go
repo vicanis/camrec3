@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"eventprocessor/lambdaclient"
 	"log"
 
@@ -27,7 +26,7 @@ func handleRequest(ctx context.Context, event events.SimpleEmailEvent) (string, 
 	}
 
 	if len(items) == 0 {
-		return "ERROR", errors.New("not found")
+		return "OK", nil
 	}
 
 	for _, item := range items {
