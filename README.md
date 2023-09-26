@@ -36,6 +36,8 @@ I need a solution to store CCTV events somewhere in the cloud (preferably `Amazo
 
 https://camera.fbuzz.pro
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vicanis_camrec3&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=vicanis_camrec3)
+
 # Tech stack
 
 Camera backend (`recorder`, `processor`):
