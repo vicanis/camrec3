@@ -18,23 +18,21 @@ type chunkFiles []chunkFile
 
 const dirRaw = "/video/raw"
 
-func getChunkFiles() (files chunkFiles, err error) {
+func getChunkFiles(ts time.Time) (files chunkFiles, err error) {
 	files = make(chunkFiles, 0)
 
 	checkDirs := []string{}
 
-	y, m, d := time.Now().Date()
-
-	checkDirs = append(checkDirs, fmt.Sprintf(
-		"%s/%04d/%02d/%02d",
-		dirRaw, y, m, d,
-	))
-
-	y, m, d = time.Now().Add(-24 * time.Hour).Date()
-	checkDirs = append(checkDirs, fmt.Sprintf(
-		"%s/%04d/%02d/%02d",
-		dirRaw, y, m, d,
-	))
+	for _, day := range []time.Time{
+		ts,
+		ts.Add(-24 * time.Hour),
+	} {
+		y, m, d := day.Date()
+		checkDirs = append(checkDirs, fmt.Sprintf(
+			"%s/%04d/%02d/%02d",
+			dirRaw, y, m, d,
+		))
+	}
 
 	var walk func(string)
 
