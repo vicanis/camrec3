@@ -6,7 +6,7 @@ import (
 )
 
 func SearchVideoBundle(ts time.Time) (data []byte, err error) {
-	chunkFiles, err := getChunkFiles()
+	chunkFiles, err := getChunkFiles(ts)
 	if err != nil {
 		return
 	}
