@@ -77,8 +77,8 @@ func Encode(source []byte, offset int) (chunk []byte, err error) {
 	exitCode := cmd.ProcessState.ExitCode()
 
 	if exitCode != 0 {
-		log.Printf("process output: %s", stdout.String())
 		err = fmt.Errorf("exit code: %d", exitCode)
+		log.Print(err)
 		return
 	}
 
