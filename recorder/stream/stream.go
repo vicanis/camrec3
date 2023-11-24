@@ -72,7 +72,7 @@ func startStreaming(ctx context.Context) (err error) {
 			log.Printf("save chunk failed: %s", err)
 		}
 
-		chunk = make([]byte, 0)
+		chunk = chunk[:0]
 
 		chunkLock.Unlock()
 
@@ -100,12 +100,14 @@ func startStreaming(ctx context.Context) (err error) {
 		}
 	}()
 
+	packet := make([]byte, 1024*1024)
+
 	for {
 		if err = checkProcessState(); err != nil {
 			return
 		}
 
-		packet := make([]byte, 1024*1024)
+		packet = packet[:0]
 
 		var n int
 		n, err = stdout.Read(packet)
