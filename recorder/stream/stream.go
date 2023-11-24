@@ -92,6 +92,10 @@ func startStreaming(ctx context.Context) (err error) {
 			case <-ctx.Done():
 				return
 			case <-minuteTicker.C:
+				if len(chunk) == 0 {
+					log.Fatal("the chunk is empty")
+				}
+
 				err = save()
 				if err != nil {
 					log.Fatal(err)
