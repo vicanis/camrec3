@@ -60,12 +60,25 @@ func startStreaming(ctx context.Context) (err error) {
 	}
 
 	chunk := make([]byte, 0)
+	var badChunkCounter int
 	chunkLock := sync.Mutex{}
 
 	var minuteTicker *time.Ticker
 
 	save := func() (err error) {
 		chunkLock.Lock()
+
+		if len(chunk) == 0 {
+			badChunkCounter++
+
+			if badChunkCounter == 5 {
+				log.Fatal("last 5 chunks is empty")
+			}
+
+			return
+		}
+
+		badChunkCounter = 0
 
 		err = saveChunk(chunk)
 		if err != nil {
@@ -92,10 +105,6 @@ func startStreaming(ctx context.Context) (err error) {
 			case <-ctx.Done():
 				return
 			case <-minuteTicker.C:
-				if len(chunk) == 0 {
-					log.Fatal("the chunk is empty")
-				}
-
 				err = save()
 				if err != nil {
 					log.Fatal(err)
