@@ -120,8 +120,6 @@ func startStreaming(ctx context.Context) (err error) {
 			return
 		}
 
-		packet = packet[:0]
-
 		var n int
 		n, err = stdout.Read(packet)
 		if n == 0 {
