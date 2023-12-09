@@ -50,6 +50,7 @@ func main() {
 		log.Printf("signal: %s", sig)
 		cancel()
 	case <-ctx.Done():
+		log.Printf("terminated: %s", ctx.Err())
 	}
 
 	time.Sleep(time.Second)

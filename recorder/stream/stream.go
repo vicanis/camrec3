@@ -20,6 +20,26 @@ func Start(ctx context.Context) chan error {
 		done <- startStreaming(ctx)
 	}()
 
+	go func() {
+		time.Sleep(time.Minute)
+
+		timer := time.NewTimer(15 * time.Second)
+		defer timer.Stop()
+
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-timer.C:
+				if err := checkProcessState(); err != nil {
+					log.Printf("bad process state: %s", err)
+					done <- err
+					return
+				}
+			}
+		}
+	}()
+
 	return done
 }
 
