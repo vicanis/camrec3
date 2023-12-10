@@ -42,6 +42,8 @@ func main() {
 	}()
 
 	go func() {
+		log.Printf("start healthcheck")
+
 		ech := stream.StartHealthcheck(ctx)
 
 		select {

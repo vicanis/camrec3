@@ -26,7 +26,7 @@ func StartHealthcheck(ctx context.Context) chan error {
 
 		select {
 		case <-ctx.Done():
-			srv.Shutdown(ctx)
+			ch <- srv.Shutdown(ctx)
 		case ch <- srv.ListenAndServe():
 		}
 	}()
