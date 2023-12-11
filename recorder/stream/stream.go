@@ -32,6 +32,7 @@ func Start(ctx context.Context) chan error {
 			case <-ctx.Done():
 				return
 			case <-timer.C:
+				log.Printf("check process state")
 				if err := checkProcessState(); err != nil {
 					log.Printf("bad process state: %s", err)
 					done <- err
