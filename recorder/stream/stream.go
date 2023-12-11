@@ -169,15 +169,21 @@ func startStreaming(ctx context.Context) (err error) {
 }
 
 func checkProcessState() error {
+	log.Printf("find process with PID %d", cmd.Process.Pid)
+
 	p, err := os.FindProcess(cmd.Process.Pid)
 	if err != nil {
 		return fmt.Errorf("find process failed: %s", err)
 	}
 
+	log.Printf("send signal 0")
+
 	err = p.Signal(syscall.Signal(0))
 	if err != nil {
 		return fmt.Errorf("process state error: %s", err)
 	}
+
+	log.Printf("signal 0 sent")
 
 	return nil
 }
