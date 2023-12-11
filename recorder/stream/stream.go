@@ -12,7 +12,6 @@ import (
 )
 
 var cmd *exec.Cmd
-var cmdLock sync.RWMutex
 
 func Start(ctx context.Context) chan error {
 	done := make(chan error, 1)
@@ -63,21 +62,16 @@ func startStreaming(ctx context.Context) (err error) {
 
 	log.Printf("start streamer process: %s", strings.Join(cmdArgs, " "))
 
-	cmdLock.Lock()
 	cmd = exec.Command(cmdArgs[0], cmdArgs[1:]...)
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		cmdLock.Unlock()
 		return
 	}
 
 	if err = cmd.Start(); err != nil {
-		cmdLock.Unlock()
 		return
 	}
-
-	cmdLock.Unlock()
 
 	log.Printf("streamer process was started: PID %d", cmd.Process.Pid)
 
@@ -160,9 +154,7 @@ func startStreaming(ctx context.Context) (err error) {
 
 		select {
 		case <-ctx.Done():
-			cmdLock.Lock()
 			cmd.Process.Signal(os.Interrupt)
-			cmdLock.Unlock()
 			err = ctx.Err()
 			return
 
@@ -176,9 +168,6 @@ func startStreaming(ctx context.Context) (err error) {
 }
 
 func checkProcessState() error {
-	cmdLock.RLock()
-	defer cmdLock.RUnlock()
-
 	state := cmd.ProcessState
 
 	if state == nil {

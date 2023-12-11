@@ -16,9 +16,6 @@ func StartHealthcheck(ctx context.Context) chan error {
 			ReadTimeout:  10 * time.Second,
 			WriteTimeout: 10 * time.Second,
 			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				cmdLock.RLock()
-				defer cmdLock.RUnlock()
-
 				if err := checkProcessState(); err != nil {
 					http.Error(w, "bad process state", http.StatusInternalServerError)
 				} else {
