@@ -23,7 +23,7 @@ func Start(ctx context.Context) chan error {
 	go func() {
 		time.Sleep(time.Minute)
 
-		timer := time.NewTimer(15 * time.Second)
+		timer := time.NewTicker(15 * time.Second)
 		defer timer.Stop()
 
 		for {
