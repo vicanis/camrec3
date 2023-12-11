@@ -8,11 +8,11 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 )
 
 var cmd *exec.Cmd
+var lastDataTimestamp time.Time = time.Now()
 
 func Start(ctx context.Context) chan error {
 	done := make(chan error, 1)
@@ -165,18 +165,15 @@ func startStreaming(ctx context.Context) (err error) {
 		chunkLock.Lock()
 		chunk = append(chunk, packet[:n]...)
 		chunkLock.Unlock()
+
+		lastDataTimestamp = time.Now()
 	}
 }
 
 func checkProcessState() error {
-	log.Printf("send signal 0 to process with PID %d", cmd.Process.Pid)
-
-	err := cmd.Process.Signal(syscall.Signal(0))
-	if err != nil {
-		return fmt.Errorf("process state error: %s", err)
+	if lastDataTimestamp.Before(time.Now().Add(-30 * time.Second)) {
+		return fmt.Errorf("it seems the process is not alive")
 	}
-
-	log.Printf("signal 0 sent")
 
 	return nil
 }
