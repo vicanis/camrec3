@@ -32,12 +32,14 @@ func Start(ctx context.Context) chan error {
 			case <-ctx.Done():
 				return
 			case <-timer.C:
-				log.Printf("check process state")
+				log.Printf("process state: check")
 				if err := checkProcessState(); err != nil {
-					log.Printf("bad process state: %s", err)
+					log.Printf("process state: bad %s", err)
 					done <- err
 					return
 				}
+
+				log.Printf("process state: ok")
 			}
 		}
 	}()
