@@ -41,19 +41,6 @@ func main() {
 		}
 	}()
 
-	go func() {
-		log.Printf("start healthcheck")
-
-		ech := stream.StartHealthcheck(ctx)
-
-		select {
-		case <-ctx.Done():
-		case err := <-ech:
-			log.Printf("healtcheck failed: %s", err)
-			cancel()
-		}
-	}()
-
 	time.Sleep(time.Second)
 
 	log.Printf("press ctrl+c to interrupt")
