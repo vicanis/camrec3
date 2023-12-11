@@ -74,6 +74,8 @@ func startStreaming(ctx context.Context) (err error) {
 		return
 	}
 
+	cmdLock.Unlock()
+
 	log.Printf("streamer process was started: PID %d", cmd.Process.Pid)
 
 	// wait a little till ffmpeg starts write to the stdout
