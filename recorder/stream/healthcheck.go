@@ -2,6 +2,7 @@ package stream
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -19,7 +20,9 @@ func StartHealthcheck(ctx context.Context) chan error {
 				defer cmdLock.RUnlock()
 
 				if err := checkProcessState(); err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
+					http.Error(w, "bad process state", http.StatusInternalServerError)
+				} else {
+					fmt.Fprint(w, "ok")
 				}
 			}),
 		}
