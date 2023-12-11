@@ -6,6 +6,8 @@ services:
         restart: always
         volumes:
             - ./video:/video
+        ports:
+            - 8080:8080
         environment:
             TZ: Europe/Samara
     processor:
