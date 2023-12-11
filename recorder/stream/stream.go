@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -168,14 +169,14 @@ func startStreaming(ctx context.Context) (err error) {
 }
 
 func checkProcessState() error {
-	state := cmd.ProcessState
-
-	if state == nil {
-		return nil
+	p, err := os.FindProcess(cmd.Process.Pid)
+	if err != nil {
+		return fmt.Errorf("find process failed: %s", err)
 	}
 
-	if state.Exited() {
-		return fmt.Errorf("process exited with code %d", state.ExitCode())
+	err = p.Signal(syscall.Signal(0))
+	if err != nil {
+		return fmt.Errorf("process state error: %s", err)
 	}
 
 	return nil
