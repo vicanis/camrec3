@@ -22,7 +22,14 @@ func ProcessEvent(e Event) (err error) {
 		return
 	}
 
+	okProcessed := false
+
 	defer func() {
+		if !okProcessed {
+			log.Printf("item processing failed, do not update flag")
+			return
+		}
+
 		if err := e.SetProcessed(fileName); err != nil {
 			log.Printf("update item processed failed: %s", err)
 		}
@@ -63,6 +70,8 @@ func ProcessEvent(e Event) (err error) {
 	}
 
 	log.Printf("event video was saved")
+
+	okProcessed = true
 
 	return
 }
